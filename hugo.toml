@@ -1,6 +1,6 @@
 baseURL = 'https://qikelab.github.io/'
 languageCode = 'zh-cn'
-title = 'Qike's Blog'
+title = 'Qike Blog'
 theme = 'ananke'
 
 
