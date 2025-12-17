@@ -5,6 +5,5 @@ title = 'My First Post'
 +++
 ## Introduction
 
-This is **bold** text, and this is *emphasized* text.
-
-Visit the [Hugo](https://gohugo.io) website!!
+各位好，这是Qike的个人网站
+我将在这里持续更新内容，并不定期在X、公众号等部分更新
