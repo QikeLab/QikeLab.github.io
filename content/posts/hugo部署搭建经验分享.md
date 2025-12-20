@@ -1,198 +1,105 @@
 +++
 date = '2025-12-20T16:21:35+08:00'
 draft = false
-title = 'Hugo搭建个人博客并部署Github Pages实现自动化公网发布'
+title = '使用Hugo搭建个人博客并部署至GitHub Pages实现自动化发布'
 +++
 
-之前一直不太重视记录和输出，光凭脑子记就可以
+过去我并没有养成系统记录和输出的习惯，总以为靠脑子就能记住。
 
-然而，现在年纪大了，发现自己的脑子正在以惊人的速度磨损
+然而，随着年龄增长，我发现自己记忆的磨损速度快得惊人，常常转身就忘事。
 
-经常有些事情转头就忘
+于是，我决定搭建一个博客，用于日常的记录和整理。
 
-遂打算搭建一个博客做些记录
+这篇文档就用来记录整个博客的创建过程。
 
-那么就用这个文档记录创建的过程吧！
+## 技术选型：Hugo + GitHub Pages
 
-## 选择Hugo+Github Pages
+我将自己的需求告诉了Gemini，请它帮忙推荐合适的技术方案和工具。
 
-把我的需求告诉Gemini，让他帮我选择使用的技术方案和工具。
+核心需求如下：
 
-需求是：
+1.  **多终端发布**：支持在电脑、手机等多种设备上发布内容。毕竟有时懒得开电脑，而灵感可能随时出现在手机上。
+2.  **简洁易用**：安装和部署过程简单，博客不求华丽，但求简洁、流畅。
+3.  **公网可访问**：必须能够通过公网访问，不能仅限于本地浏览。
 
-1. 可以用电脑、手机等多终端发布，毕竟有时候懒得打开电脑、有时候想法只是记在手机里
-2. 安装、部署简单，不要求博客花里胡哨，简介、流畅即可
-3. 要能够通过公网访问，不能只能在本地浏览
+综合考虑后，我选择了 **Hugo + GitHub Pages** 的方案，操作系统为 Windows。
 
-最终我选择了Hugo + Github Pages的方案，windows系统
+## 部署步骤
 
-## 部署过程
+### 1. 安装 Hugo
 
-### 1. 安装hugo
+通过 Windows 包管理器 winget 安装 Hugo Extended 版本（支持 Sass/SCSS）。
 
+```bash
 winget install Hugo.Hugo.Extended
+```
 
-### 2. git的安装省略
+### 2. 安装 Git
 
-### 3. 初始化hugo项目
+Git 的安装过程此处省略。
 
-``` bash
-hugo new site quickstart //文件夹名随喜
+### 3. 初始化 Hugo 项目
+
+```bash
+hugo new site quickstart # 文件夹名称可按喜好更改
 cd quickstart
 git init
-git submodule add https://github.com/theNewDynamic/gohugo-theme-ananke.git themes/ananke //这里是拷贝ananke主题作为git子模块
+# 添加 Ananke 主题作为 Git 子模块
+git submodule add https://github.com/theNewDynamic/gohugo-theme-ananke.git themes/ananke
 echo "theme = 'ananke'" >> hugo.toml
 hugo server
 ```
 
-### 4. 添加文章
+### 4. 创建文章
 
-``hugo new content content/posts/my-first-post.md``
+使用命令创建新文章：
 
-创建的文章会在content/posts目录下生成，也可以自己手动创建
+```bash
+hugo new content posts/my-first-post.md
+```
 
-Note: **内容完成后，记得将draft字段修改为false。因为hugo默认不会构建草稿**
+文章将在 `content/posts/` 目录下生成。你也可以直接在该目录下手动创建 `.md` 文件。
 
-### 5. 配置网址
+**注意：内容完成后，务必将文章头部的 `draft` 字段改为 `false`，因为 Hugo 默认不会构建草稿。**
 
-在根目录的hugo.toml文件中，配置网址信息
+### 5. 配置网站信息
 
-``` toml
-baseURL = 'https://example.org/'   //替换为'https://yourname.github.io/'，yourname必须和你的github账户名一致
+在项目根目录的 `hugo.toml` 文件中，配置网站的基本信息。
+
+```toml
+baseURL = 'https://yourname.github.io/' # 替换为你的 GitHub 用户名，必须与账户名一致
 languageCode = 'en-us'
-title = 'My New Hugo Site'         //替换为你想要的网站名
+title = 'My New Hugo Site'              # 替换为你想要的网站名称
 theme = 'ananke'
 ```
 
-配置完成后，可以使用``hugo server -D``预览
+配置完成后，可以使用 `hugo server -D` 命令在本地预览网站（`-D` 参数包含草稿）。
 
-### 6. 在Github创建yourname.github.io仓库
+### 6. 在 GitHub 创建仓库
 
-在github仓库的Settings > Pages中，将Source改为Github Actions
+在 GitHub 上创建一个名为 `yourname.github.io` 的公共仓库（`yourname` 替换为你的 GitHub 用户名）。
 
-### 7. 配置github pages和Actions实现自动化构建网页
+然后，进入仓库的 **Settings > Pages**，将 **Source** 改为 **GitHub Actions**。
 
-    在项目根目录，创建.github/workflows/hugo.yml文件
+### 7. 配置 GitHub Pages 与自动化工作流
 
-    并替换为官网的配置：
+在 Hugo 项目的根目录下，创建 `.github/workflows/hugo.yml` 文件，并将官网提供的配置内容复制进去。
 
-    ``` yml
-    name: Build and deploy
-    on:
-    push:
-        branches:
-        - main
-    workflow_dispatch:
-    permissions:
-    contents: read
-    pages: write
-    id-token: write
-    concurrency:
-    group: pages
-    cancel-in-progress: false
-    defaults:
-    run:
-        shell: bash
-    jobs:
-    build:
-        runs-on: ubuntu-latest
-        env:
-        DART_SASS_VERSION: 1.96.0
-        GO_VERSION: 1.25.5
-        HUGO_VERSION: 0.152.2
-        NODE_VERSION: 24.12.0
-        TZ: Europe/Oslo
-        steps:
-        - name: Checkout
-            uses: actions/checkout@v5
-            with:
-            submodules: recursive
-            fetch-depth: 0
-        - name: Setup Go
-            uses: actions/setup-go@v5
-            with:
-            go-version: ${{ env.GO_VERSION }}
-            cache: false
-        - name: Setup Node.js
-            uses: actions/setup-node@v4
-            with:
-            node-version: ${{ env.NODE_VERSION }}
-        - name: Setup Pages
-            id: pages
-            uses: actions/configure-pages@v5
-        - name: Create directory for user-specific executable files
-            run: |
-            mkdir -p "${HOME}/.local"
-        - name: Install Dart Sass
-            run: |
-            curl -sLJO "https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
-            tar -C "${HOME}/.local" -xf "dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
-            rm "dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
-            echo "${HOME}/.local/dart-sass" >> "${GITHUB_PATH}"
-        - name: Install Hugo
-            run: |
-            curl -sLJO "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
-            mkdir "${HOME}/.local/hugo"
-            tar -C "${HOME}/.local/hugo" -xf "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
-            rm "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
-            echo "${HOME}/.local/hugo" >> "${GITHUB_PATH}"
-        - name: Verify installations
-            run: |
-            echo "Dart Sass: $(sass --version)"
-            echo "Go: $(go version)"
-            echo "Hugo: $(hugo version)"
-            echo "Node.js: $(node --version)"
-        - name: Install Node.js dependencies
-            run: |
-            [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true
-        - name: Configure Git
-            run: |
-            git config core.quotepath false
-        - name: Cache restore
-            id: cache-restore
-            uses: actions/cache/restore@v4
-            with:
-            path: ${{ runner.temp }}/hugo_cache
-            key: hugo-${{ github.run_id }}
-            restore-keys:
-                hugo-
-        - name: Build the site
-            run: |
-            hugo \
-                --gc \
-                --minify \
-                --baseURL "${{ steps.pages.outputs.base_url }}/" \
-                --cacheDir "${{ runner.temp }}/hugo_cache"
-        - name: Cache save
-            id: cache-save
-            uses: actions/cache/save@v4
-            with:
-            path: ${{ runner.temp }}/hugo_cache
-            key: ${{ steps.cache-restore.outputs.cache-primary-key }}
-        - name: Upload artifact
-            uses: actions/upload-pages-artifact@v3
-            with:
-            path: ./public
-    deploy:
-        environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
-        - name: Deploy to GitHub Pages
-            id: deployment
-            uses: actions/deploy-pages@v4
-    ```
+该工作流会在代码推送到 `main` 分支时，自动构建 Hugo 站点并部署到 GitHub Pages。
 
-参考官网的配置：<https://gohugo.io/host-and-deploy/host-on-github-pages/>
+你可以在 Hugo 官方文档中找到最新的工作流配置示例：<https://gohugo.io/host-and-deploy/host-on-github-pages/>
 
-### 8. 配置完成，持续输出文章并通过yourname.github.io访问
+### 8. 完成部署，开始写作
 
-目前按照这个配置，只要在posts中增加内容，然后push到git仓库中，Github会自动将内容发布到<yourname.github.io>
+完成以上配置后，你的自动化发布流水线就已就绪。今后只需在 `content/posts/` 目录下添加或更新文章，然后将更改 `push` 到 GitHub 仓库，GitHub Actions 便会自动构建并发布网站。
 
-### 9. 支持图片todo
+访问 `https://yourname.github.io` 即可查看你的博客。
 
+### 9. 后续优化 (Todo)
 
+*   支持在文章中插入并管理图片。
 
-refs: <https://gohugo.io/getting-started/quick-start/>
+---
+
+**参考链接：**
+*   Hugo 快速入门指南：<https://gohugo.io/getting-started/quick-start/>
