@@ -99,12 +99,13 @@ theme = 'ananke'
 
 *   支持在文章中插入并管理图片。
 
-### 10. 修改主题
+### 10. 修改为PaperMod
 
-``git submodule add https://github.com/pseudoyu/pure themes/pure``
 
+``` bash
 git submodule add --depth=1 https://github.com/adityatelange/hugo-PaperMod.git themes/PaperMod
 git submodule update --init --recursive # needed when you reclone your repo (submodules may not get cloned automatically)
+```
 
 
 
