@@ -137,7 +137,11 @@ git submodule add --depth=1 https://github.com/adityatelange/hugo-PaperMod.git t
 git submodule update --init --recursive # needed when you reclone your repo (submodules may not get cloned automatically)
 ```
 
+### 11. 根据模板创建文章
 
+``` bash 
+hugo new --kind post content/xxx.md
+```
 
 ---
 

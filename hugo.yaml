@@ -56,6 +56,24 @@ menu:
     #   url: links
     #   weight: 60
 
+pagination.pagerSize: 15 # 每页显示的文章数
+summaryLength: 70 # 文章概览的自字数，默认70
+
+# profileMode:
+#     enabled: true
+#     title: ｸﾞｯ!(๑•̀ㅂ•́)و✧
+#     subtitle: "<br/>👏🏼欢迎光临我的博客<br/>"
+#     # imageUrl: "img/photo.jpg" #图片放在static/img/photo.jpg
+#     # imageTitle:
+#     # imageWidth: 150
+#     # imageHeight: 150
+#     buttons:
+#         - name: 学习笔记
+#           url: posts/study
+#         - name: 踩坑日记
+#           url: posts/bugs
+#         - name: 谈天说地
+#           url: posts/life
 
 
 params:
