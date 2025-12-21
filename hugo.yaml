@@ -142,6 +142,11 @@ params:
     twikoo:
       version: 1.4.11
 
+outputs:
+    home:
+        - HTML
+        - RSS
+        - JSON # is necessary
 
 taxonomies:
     category: categories
